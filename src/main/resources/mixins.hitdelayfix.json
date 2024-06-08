@@ -1,0 +1,9 @@
+{
+	"required": true,
+	"package": "fusee.legitmods.noclickdelay",
+	"refmap": "mixins.hitdelayfix.refmap.json",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"MixinMinecraft"
+	]
+}

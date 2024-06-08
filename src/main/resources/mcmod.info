@@ -1,0 +1,16 @@
+[
+{
+  "modid": "fusee",
+  "name": "Fusee",
+  "description": "just a simple mod.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["DarKay__"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

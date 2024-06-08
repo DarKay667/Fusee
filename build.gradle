@@ -1,0 +1,115 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        
+        maven {
+            url = "https://plugin.gradle.org/m2"
+        }
+        
+        maven {
+            name = 'SpongePowered'
+            url = 'https://repo.spongepowered.org/repository/maven-public'
+        }
+    }
+    
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.10"
+        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.3"
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "org.spongepowered.mixin"
+apply plugin: "com.github.johnrengelman.shadow"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+
+    maven {
+        name = 'spongepowered-repo'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+}
+
+version = "1.1"
+group= "fusee"
+archivesBaseName = "fusee"
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_20"
+}
+
+dependencies {
+    compile("org.spongepowered:mixin:0.6.4-SNAPSHOT") {
+        exclude module: "launchwrapper"
+    }
+}
+
+mixin {
+    add sourceSets.main, "mixins.fusee.refmap.json"
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('org.spongepowered:mixin'))
+    }
+
+    classifier = 'full'
+}
+
+build.dependsOn(shadowJar)
+
+jar {
+    manifest.attributes(
+        "MixinConfigs": 'mixins.fusee.json',
+        "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
+        "TweakOrder": 0,
+        "FMLCorePluginContainsFMLMod": 'fusee.injection.MixinLoader'
+    )
+}
+
+configurations {
+    mods
+    shade
+    compile.extendsFrom shade
+}
+
+apply plugin: "idea"
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
+
+processResources
+{
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+sourceCompatibility = targetCompatibility = "1.8"
+
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.8"
+}
